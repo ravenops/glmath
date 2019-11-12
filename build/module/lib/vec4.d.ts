@@ -1,0 +1,37 @@
+import { Quat } from './quat';
+import { Mat4 } from './mat44';
+import { Vec3 } from './vec3';
+export declare class Vec4 extends Float32Array {
+    constructor(x: number, y: number, z: number, w: number);
+    static zero(): Vec4;
+    static one(): Vec4;
+    clone(): Vec4;
+    copy(a: Vec4): Vec4;
+    add(b: Vec4): Vec4;
+    subtract(b: Vec4): Vec4;
+    multiply(b: Vec4): Vec4;
+    divide(b: Vec4): Vec4;
+    ceil(): Vec4;
+    floor(): Vec4;
+    min(b: Vec4): Vec4;
+    max(b: Vec4): Vec4;
+    round(): Vec4;
+    scale(b: number): Vec4;
+    distance(b: Vec4): number;
+    squaredDistance(b: Vec4): number;
+    get length(): number;
+    get squaredLength(): number;
+    negate(): Vec4;
+    inverse(): Vec4;
+    normalize(): Vec4;
+    dot(b: Vec4): number;
+    cross(u: Vec3, v: Vec3, w: Vec3): Vec4;
+    lerp(a: Vec4, b: Vec4, t: number): Vec4;
+    random(scale?: number): Vec4;
+    transformMat4(m: Mat4): Vec4;
+    transformQuat(q: Quat): Vec4;
+    zero(): Vec4;
+    toString(): string;
+    equalsExact(b: Vec4): boolean;
+    equalsApproximately(b: Vec4): boolean;
+}
