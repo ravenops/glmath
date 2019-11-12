@@ -11,7 +11,7 @@ export class Mat2 extends Float32Array {
    * @param {Number} m11 Component in column 1, row 1 position (index 3)
    * @returns {mat2} out A new 2x2 matrix
    */
-  constructor(m00 = 1, m01 = 0, m10 = 0, m11 = 1) {
+  constructor(m00: number, m01: number, m10: number, m11: number) {
     super(4)
     this[0] = m00
     this[1] = m01
@@ -37,7 +37,7 @@ export class Mat2 extends Float32Array {
     return new Mat2(1, 0, 0, 1)
   }
 
-  setIdentity(): Mat2 {
+  identity(): Mat2 {
     this[0] = 1
     this[1] = 0
     this[2] = 0

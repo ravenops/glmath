@@ -19,7 +19,17 @@ export class Mat3 extends Float32Array {
    * @param {Number} m21 Component in column 2, row 1 position (index 7)
    * @param {Number} m22 Component in column 2, row 2 position (index 8)
    */
-  constructor(m00 = 1, m01 = 0, m02 = 0, m10 = 0, m11 = 1, m12 = 0, m20 = 0, m21 = 0, m22 = 1) {
+  constructor(
+    m00: number,
+    m01: number,
+    m02: number,
+    m10: number,
+    m11: number,
+    m12: number,
+    m20: number,
+    m21: number,
+    m22: number,
+  ) {
     super(9)
     this[0] = m00
     this[1] = m01
@@ -33,13 +43,17 @@ export class Mat3 extends Float32Array {
     return this
   }
 
-  setIdentity(): Mat3 {
+  static identity(): Mat3 {
+    return new Mat3(1, 0, 0, 0, 1, 0, 0, 0, 1)
+  }
+
+  identity(): Mat3 {
     this.set([1, 0, 0, 0, 1, 0, 0, 0, 1])
     return this
   }
 
   // Copies the upper-left 3x3 values into the given mat3.
-  static fromMat4(a: Mat4): Mat3 {
+  setFromMat4(a: Mat4): Mat3 {
     return new Mat3(a[0], a[1], a[2], a[4], a[5], a[6], a[8], a[9], a[10])
   }
 
@@ -58,16 +72,6 @@ export class Mat3 extends Float32Array {
     this[7] = a[7]
     this[8] = a[8]
     return this
-  }
-
-  /**
-   * Set a mat3 to the identity matrix
-   *
-   * @param {mat3} out the receiving matrix
-   * @returns {mat3} out
-   */
-  static identity(): Mat3 {
-    return new Mat3(1, 0, 0, 0, 1, 0, 0, 0, 1)
   }
 
   transpose(): Mat3 {
@@ -194,29 +198,32 @@ export class Mat3 extends Float32Array {
   }
 
   // Creates a matrix from a vector translation
-  static fromTranslation(v: Vec2): Mat3 {
+  setFromTranslation(v: Vec2): Mat3 {
     const [x, y] = v
-    return new Mat3(1, 0, 0, 0, 1, 0, x, y, 1)
+    this.set([1, 0, 0, 0, 1, 0, x, y, 1])
+    return this
   }
 
-  static fromRotation(rad: number): Mat3 {
+  setFromRotation(rad: number): Mat3 {
     const c = Math.cos(rad)
     const s = Math.sin(rad)
-
-    return new Mat3(c, s, 0, -s, c, 0, 0, 0, 1)
+    this.set([c, s, 0, -s, c, 0, 0, 0, 1])
+    return this
   }
 
-  static fromScaling(v: Vec2): Mat3 {
+  setFromScaling(v: Vec2): Mat3 {
     const [x, y] = v
-    return new Mat3(x, 0, 0, 0, y, 0, 0, 0, 1)
+    this.set([x, 0, 0, 0, y, 0, 0, 0, 1])
+    return this
   }
 
-  static fromMat23(a: Mat23): Mat3 {
+  setFromMat23(a: Mat23): Mat3 {
     const [a0, a1, a2, a3, a4, a5] = a
-    return new Mat3(a0, a1, 0, a2, a3, 0, a4, a5, 1)
+    this.set([a0, a1, 0, a2, a3, 0, a4, a5, 1])
+    return this
   }
 
-  static fromQuat(q: Quat): Mat3 {
+  setFromQuat(q: Quat): Mat3 {
     const [x, y, z, w] = q
     const x2 = x + x
     const y2 = y + y
@@ -232,10 +239,19 @@ export class Mat3 extends Float32Array {
     const wy = w * y2
     const wz = w * z2
 
-    return new Mat3(1 - yy - zz, yx + wz, zx - wy, yx - wz, 1 - xx - zz, zy + wx, zx + wy, zy - wx, 1 - xx - yy)
+    this[0] = 1 - yy - zz
+    this[1] = yx + wz
+    this[2] = zx - wy
+    this[3] = yx - wz
+    this[4] = 1 - xx - zz
+    this[5] = zy + wx
+    this[6] = zx + wy
+    this[7] = zy - wx
+    this[8] = 1 - xx - yy
+    return this
   }
 
-  static normalFromMat4(a: Mat4): Mat3 {
+  setFromMat4Normal(a: Mat4): Mat3 {
     const [a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33] = a
     const b00 = a00 * a11 - a01 * a10
     const b01 = a00 * a12 - a02 * a10
@@ -258,21 +274,21 @@ export class Mat3 extends Float32Array {
     }
     det = 1.0 / det
 
-    return new Mat3(
-      (a11 * b11 - a12 * b10 + a13 * b09) * det,
-      (a12 * b08 - a10 * b11 - a13 * b07) * det,
-      (a10 * b10 - a11 * b08 + a13 * b06) * det,
-      (a02 * b10 - a01 * b11 - a03 * b09) * det,
-      (a00 * b11 - a02 * b08 + a03 * b07) * det,
-      (a01 * b08 - a00 * b10 - a03 * b06) * det,
-      (a31 * b05 - a32 * b04 + a33 * b03) * det,
-      (a32 * b02 - a30 * b05 - a33 * b01) * det,
-      (a30 * b04 - a31 * b02 + a33 * b00) * det,
-    )
+    this[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det
+    this[1] = (a12 * b08 - a10 * b11 - a13 * b07) * det
+    this[2] = (a10 * b10 - a11 * b08 + a13 * b06) * det
+    this[3] = (a02 * b10 - a01 * b11 - a03 * b09) * det
+    this[4] = (a00 * b11 - a02 * b08 + a03 * b07) * det
+    this[5] = (a01 * b08 - a00 * b10 - a03 * b06) * det
+    this[6] = (a31 * b05 - a32 * b04 + a33 * b03) * det
+    this[7] = (a32 * b02 - a30 * b05 - a33 * b01) * det
+    this[8] = (a30 * b04 - a31 * b02 + a33 * b00) * det
+    return this
   }
 
-  static projection(glContextWidth: number, glContextHeight: number): Mat3 {
-    return new Mat3(2 / glContextWidth, 0, 0, 0, -2 / glContextHeight, 0, -1, 1, 1)
+  setFromProjection(glContextWidth: number, glContextHeight: number): Mat3 {
+    this.set([2 / glContextWidth, 0, 0, 0, -2 / glContextHeight, 0, -1, 1, 1])
+    return this
   }
 
   toString(): string {

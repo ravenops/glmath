@@ -5,11 +5,11 @@ import { Vec3 } from '../lib/vec3'
 import { equalsApproximately } from '../lib/common'
 
 describe('quat', () => {
-  const quatA = new Quat()
-  const quatB = new Quat()
-  const identity = new Quat()
+  const quatA = Quat.identity()
+  const quatB = Quat.identity()
+  const identity = Quat.identity()
   const deg90 = Math.PI / 2
-  let result = new Quat()
+  let result = Quat.identity()
 
   beforeEach(() => {
     quatA.set([1, 2, 3, 4])
@@ -94,7 +94,7 @@ describe('quat', () => {
       })
 
       it('should be the square', () => {
-        const reference = new Quat().multiply(quatA)
+        const reference = Quat.identity().multiply(quatA)
         expect(result.equalsApproximately(reference))
       })
       it('should be normalized', () => {
@@ -169,12 +169,12 @@ describe('quat', () => {
   })
 
   describe('fromMat3', () => {
-    let matr = new Mat3()
+    const matr = Mat3.identity()
 
     describe('legacy', () => {
       beforeEach(() => {
         matr.set([1, 0, 0, 0, 0, -1, 0, 1, 0])
-        result = Quat.fromMat3(matr)
+        result.setFromMat3(matr)
       })
 
       it('should set dest to the correct value', () => {
@@ -185,7 +185,7 @@ describe('quat', () => {
     describe('where trace > 0', () => {
       beforeEach(() => {
         matr.set([1, 0, 0, 0, 0, -1, 0, 1, 0])
-        result = Quat.fromMat3(matr)
+        result.setFromMat3(matr)
       })
 
       it('should produce the correct transformation', () => {
@@ -195,11 +195,12 @@ describe('quat', () => {
 
     describe("from a normal matrix looking 'backward'", () => {
       beforeEach(() => {
-        const lookAt = Mat4.lookAt(new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(0, 1, 0))
-        matr = Mat3.fromMat4(lookAt)
+        const lookAt = Mat4.identity().setFromLookAt(new Vec3(0, 0, 0), new Vec3(0, 0, 1), new Vec3(0, 1, 0))
+        matr
+          .setFromMat4(lookAt)
           .invert()
           .transpose()
-        result = Quat.fromMat3(matr).normalize()
+        result.setFromMat3(matr).normalize()
       })
 
       it('should produce the same transformation as the given matrix', () => {
@@ -209,11 +210,12 @@ describe('quat', () => {
 
     describe("from a normal matrix looking 'left' and 'upside down'", () => {
       beforeEach(() => {
-        const lookAt = Mat4.lookAt(new Vec3(0, 0, 0), new Vec3(-1, 0, 0), new Vec3(0, -1, 0))
-        matr = Mat3.fromMat4(lookAt)
+        const lookAt = Mat4.identity().setFromLookAt(new Vec3(0, 0, 0), new Vec3(-1, 0, 0), new Vec3(0, -1, 0))
+        matr
+          .setFromMat4(lookAt)
           .invert()
           .transpose()
-        result = Quat.fromMat3(matr).normalize()
+        result.setFromMat3(matr).normalize()
       })
 
       it('should produce the same transformation as the given matrix', () => {
@@ -223,11 +225,12 @@ describe('quat', () => {
 
     describe("from a normal matrix looking 'upside down'", () => {
       beforeEach(() => {
-        const lookAt = Mat4.lookAt(new Vec3(0, 0, 0), new Vec3(0, 0, -1), new Vec3(0, -1, 0))
-        matr = Mat3.fromMat4(lookAt)
+        const lookAt = Mat4.identity().setFromLookAt(new Vec3(0, 0, 0), new Vec3(0, 0, -1), new Vec3(0, -1, 0))
+        matr
+          .setFromMat4(lookAt)
           .invert()
           .transpose()
-        result = Quat.fromMat3(matr).normalize()
+        result.setFromMat3(matr).normalize()
       })
 
       it('should produce the same transformation as the given matrix', () => {
@@ -239,7 +242,7 @@ describe('quat', () => {
   describe('fromEuler', () => {
     describe('legacy', () => {
       beforeEach(() => {
-        result = Quat.fromEulerDegrees(-90, 0, 0)
+        result.setFromEulerDegrees(-90, 0, 0)
       })
 
       it('should set dest to the correct value', () => {
@@ -249,7 +252,7 @@ describe('quat', () => {
 
     describe('where trace > 0', () => {
       beforeEach(() => {
-        result = Quat.fromEulerDegrees(-90, 0, 0)
+        result.setFromEulerDegrees(-90, 0, 0)
       })
 
       it('should produce the correct transformation', () => {
@@ -259,10 +262,10 @@ describe('quat', () => {
   })
 
   describe('setAxes', () => {
-    let v3 = new Vec3()
-    const view = new Vec3()
-    const up = new Vec3()
-    const right = new Vec3()
+    let v3 = Vec3.zero()
+    const view = Vec3.zero()
+    const up = Vec3.zero()
+    const right = Vec3.zero()
     beforeEach(() => {
       v3.zero()
     })
@@ -272,7 +275,7 @@ describe('quat', () => {
         view.set([-1, 0, 0])
         up.set([0, 1, 0])
         right.set([0, 0, -1])
-        result = Quat.fromAxes(view, right, up)
+        result.setFromAxes(view, right, up)
       })
 
       it('should transform local view into world left', () => {
@@ -291,7 +294,7 @@ describe('quat', () => {
         view.set([0, 0, -1])
         up.set([0, 1, 0])
         right.set([1, 0, 0])
-        result = Quat.fromAxes(view, right, up)
+        result.setFromAxes(view, right, up)
       })
 
       it('should produce identity', () => {
@@ -304,7 +307,7 @@ describe('quat', () => {
         right.set([1, 0, 0])
         up.set([0, 0, 1])
         view.set([0, -1, 0])
-        result = Quat.fromAxes(view, right, up)
+        result.setFromAxes(view, right, up)
       })
 
       it('should set correct quat4 values', () => {
@@ -314,7 +317,7 @@ describe('quat', () => {
   })
 
   describe('rotationTo', () => {
-    const r = new Vec3()
+    const r = Vec3.zero()
     beforeEach(() => {
       r.zero()
     })
@@ -372,7 +375,7 @@ describe('quat', () => {
 
   describe('create', () => {
     beforeEach(() => {
-      result = new Quat()
+      result = Quat.identity()
     })
     it('should return a 4 element array initialized to an identity quaternion', () => {
       expect(result.equalsApproximately(new Quat(0, 0, 0, 1)))
@@ -408,7 +411,7 @@ describe('quat', () => {
 
   describe('identity', () => {
     beforeEach(() => {
-      result = new Quat()
+      result = Quat.identity()
     })
     it('should place values into out', () => {
       expect(result.equalsApproximately(new Quat(0, 0, 0, 1)))
@@ -417,7 +420,7 @@ describe('quat', () => {
 
   describe('setAxisAngle', () => {
     beforeEach(() => {
-      result = Quat.setAxisAngle(new Vec3(1, 0, 0), deg90)
+      result.setFromAxisAngle(new Vec3(1, 0, 0), deg90)
     })
     it('should place values into out', () => {
       expect(result.equalsApproximately(new Quat(0.707106, 0, 0, 0.707106)))
@@ -428,7 +431,7 @@ describe('quat', () => {
     let aa: AxisAngle
     describe('for a quaternion representing no rotation', () => {
       beforeEach(() => {
-        result = Quat.setAxisAngle(new Vec3(0, 1, 0), 0)
+        result.setFromAxisAngle(new Vec3(0, 1, 0), 0)
         aa = result.axisAngle
       })
       it('should return a multiple of 2*PI as the angle component', () => {
@@ -438,7 +441,7 @@ describe('quat', () => {
 
     describe('for a simple rotation about X axis', () => {
       beforeEach(() => {
-        result = Quat.setAxisAngle(new Vec3(1, 0, 0), 0.7778)
+        result.setFromAxisAngle(new Vec3(1, 0, 0), 0.7778)
         aa = result.axisAngle
       })
       it('should return the same provided angle', () => {
@@ -451,7 +454,7 @@ describe('quat', () => {
 
     describe('for a simple rotation about Y axis', () => {
       beforeEach(() => {
-        result = Quat.setAxisAngle(new Vec3(0, 1, 0), 0.879546)
+        result.setFromAxisAngle(new Vec3(0, 1, 0), 0.879546)
         aa = result.axisAngle
       })
       it('should return the same provided angle', () => {
@@ -464,7 +467,7 @@ describe('quat', () => {
 
     describe('for a simple rotation about Z axis', () => {
       beforeEach(() => {
-        result = Quat.setAxisAngle(new Vec3(0, 0, 1), 0.123456)
+        result.setFromAxisAngle(new Vec3(0, 0, 1), 0.123456)
         aa = result.axisAngle
       })
       it('should return the same provided angle', () => {
@@ -477,7 +480,7 @@ describe('quat', () => {
 
     describe('for a slightly irregular axis and right angle', () => {
       beforeEach(() => {
-        result = Quat.setAxisAngle(new Vec3(0.707106, 0, 0.707106), deg90)
+        result.setFromAxisAngle(new Vec3(0.707106, 0, 0.707106), deg90)
         aa = result.axisAngle
       })
       it('should place values into vec', () => {
@@ -489,11 +492,12 @@ describe('quat', () => {
     })
 
     describe('for a very irregular axis and negative input angle', () => {
-      let quatA: Quat, quatB: Quat
+      const quatA = Quat.identity()
+      const quatB = Quat.identity()
       beforeEach(() => {
-        quatA = Quat.setAxisAngle(new Vec3(0.65538555, 0.49153915, 0.57346237), 8.8888)
+        quatA.setFromAxisAngle(new Vec3(0.65538555, 0.49153915, 0.57346237), 8.8888)
         aa = quatA.axisAngle
-        quatB = Quat.setAxisAngle(aa.axis, deg90)
+        quatB.setFromAxisAngle(aa.axis, deg90)
       })
       it('should return an angle between 0 and 2*PI', () => {
         expect(aa.rad).toBeGreaterThan(0)
@@ -530,7 +534,9 @@ describe('quat', () => {
     describe('compare with axisAngle', () => {
       it('should be equalish', () => {
         // compute reference value as axisAngle of quatA^{-1} * quatB
-        const quatAB = new Quat().conjugate().multiply(quatB)
+        const quatAB = Quat.identity()
+          .conjugate()
+          .multiply(quatB)
         const reference = quatAB.axisAngle
         expect(equalsApproximately(quatA.angleDistance(quatB), reference.rad))
       })
@@ -712,7 +718,7 @@ describe('quat', () => {
   })
 
   describe('exactEquals', () => {
-    const quatC = new Quat()
+    const quatC = Quat.identity()
     let r0: boolean, r1: boolean
     beforeEach(() => {
       quatA.set([0, 1, 2, 3])
@@ -737,8 +743,8 @@ describe('quat', () => {
   })
 
   describe('equals', () => {
-    const quatC = new Quat()
-    const quatD = new Quat()
+    const quatC = Quat.identity()
+    const quatD = Quat.identity()
     let r0: boolean, r1: boolean, r2: boolean
     beforeEach(() => {
       quatA.set([0, 1, 2, 3])

@@ -4,11 +4,10 @@ import { Quat } from '../lib/quat'
 import { Vec3 } from '../lib/vec3'
 
 describe('mat4', () => {
-  const matA = new Mat4()
-  const matB = new Mat4()
-  const identity = new Mat4()
-
-  let result: Mat4
+  const matA = Mat4.identity()
+  const matB = Mat4.identity()
+  const identity = Mat4.identity()
+  const result = Mat4.identity()
 
   beforeEach(() => {
     // Attempting to portray a semi-realistic transform matrix
@@ -18,7 +17,7 @@ describe('mat4', () => {
 
   describe('create', () => {
     beforeEach(() => {
-      result = new Mat4()
+      result.identity()
     })
     it('should return a 16 element array initialized to a 4x4 identity matrix', () => {
       expect(result.equalsApproximately(identity))
@@ -27,7 +26,7 @@ describe('mat4', () => {
 
   describe('clone', () => {
     beforeEach(() => {
-      result = matA.clone()
+      result.copy(matA)
     })
     it('should return a 16 element array initialized to the values in matA', () => {
       expect(result.equalsApproximately(matA))
@@ -45,7 +44,7 @@ describe('mat4', () => {
 
   describe('identity', () => {
     beforeEach(() => {
-      result = new Mat4()
+      result.identity()
     })
     it('should place values into out', () => {
       expect(result.equalsApproximately(identity))
@@ -226,7 +225,7 @@ describe('mat4', () => {
         v3 = identity.translation
       })
       it('should return the zero vector', () => {
-        expect(v3.equalsApproximately(new Vec3()))
+        expect(v3.equalsApproximately(Vec3.zero()))
       })
     })
 
@@ -242,8 +241,8 @@ describe('mat4', () => {
     describe('from a translation and rotation matrix', () => {
       beforeEach(() => {
         const v = new Vec3(5, 6, 7)
-        const q = Quat.setAxisAngle(new Vec3(0.26726124, 0.534522474, 0.8017837), 0.55)
-        result = Mat4.fromTranslationRotation(q, v)
+        const q = Quat.identity().setFromAxisAngle(new Vec3(0.26726124, 0.534522474, 0.8017837), 0.55)
+        result.setFromTranslationRotation(q, v)
         v3 = result.translation
       })
       it('should keep the same translation vector, regardless of rotation', () => {
@@ -266,7 +265,7 @@ describe('mat4', () => {
     describe('from a scale-only matrix', () => {
       beforeEach(() => {
         v3 = new Vec3(1, 2, 3)
-        result = Mat4.fromScaling(v3)
+        result.setFromScaling(v3)
       })
       it('should return translation vector', () => {
         expect(v3.equalsApproximately(new Vec3(4, 5, 6)))
@@ -276,9 +275,8 @@ describe('mat4', () => {
     describe('from a translation and rotation matrix', () => {
       beforeEach(() => {
         const v = new Vec3(5, 6, 7)
-        const q = Quat.setAxisAngle(new Vec3(1, 0, 0), 0.5)
-        const result = Mat4.fromTranslationRotation(q, v)
-        v3 = result.scaling
+        const q = Quat.identity().setFromAxisAngle(new Vec3(1, 0, 0), 0.5)
+        v3 = result.setFromTranslationRotation(q, v).scaling
       })
       it('should return the identity vector', () => {
         expect(v3.equalsApproximately(new Vec3(1, 1, 1)))
@@ -289,8 +287,8 @@ describe('mat4', () => {
       beforeEach(() => {
         const t = new Vec3(1, 2, 3)
         const s = new Vec3(5, 6, 7)
-        const q = Quat.setAxisAngle(new Vec3(0, 1, 0), 0.7)
-        result = Mat4.fromTranslationRotationScale(t, q, s)
+        const q = Quat.identity().setFromAxisAngle(new Vec3(0, 1, 0), 0.7)
+        result.setFromTranslationRotationScale(t, q, s)
         v3 = result.scaling
       })
       it('should return the same scaling factor when created', () => {
@@ -307,7 +305,7 @@ describe('mat4', () => {
         q = identity.rotation
       })
       it('should return the unit quaternion', () => {
-        expect(q.equalsApproximately(new Quat()))
+        expect(q.equalsApproximately(Quat.identity()))
       })
     })
 
@@ -316,7 +314,7 @@ describe('mat4', () => {
         q = matB.rotation
       })
       it('should return the unit quaternion', () => {
-        expect(q.equalsApproximately(new Quat()))
+        expect(q.equalsApproximately(Quat.identity()))
       })
     })
 
@@ -324,8 +322,8 @@ describe('mat4', () => {
       let v3: Vec3
       beforeEach(function() {
         const v = new Vec3(5, 6, 7)
-        const q = Quat.setAxisAngle(new Vec3(0.26726124, 0.534522474, 0.8017837), 0.55)
-        result = Mat4.fromTranslationRotation(q, v)
+        const q = Quat.identity().setFromAxisAngle(new Vec3(0.26726124, 0.534522474, 0.8017837), 0.55)
+        result.setFromTranslationRotation(q, v)
         v3 = result.translation
       })
       it('should keep the same translation vector, regardless of rotation', function() {
@@ -336,7 +334,7 @@ describe('mat4', () => {
 
   describe('frustum', () => {
     beforeEach(() => {
-      result = Mat4.frustum(-1, 1, -1, 1, -1, 1)
+      result.setFromFrustum(-1, 1, -1, 1, -1, 1)
     })
     it('should place values into out', () => {
       expect(result.equalsApproximately(new Mat4(-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0)))
@@ -346,7 +344,7 @@ describe('mat4', () => {
   describe('perspective', () => {
     const fovy = Math.PI * 0.5
     beforeEach(() => {
-      result = Mat4.perspective(fovy, 1, 0, 1)
+      result.setFromPerspective(fovy, 1, 0, 1)
     })
     it('should place values into out', () => {
       expect(result.equalsApproximately(new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0)))
@@ -354,7 +352,7 @@ describe('mat4', () => {
 
     describe('with nonzero near, 45deg fovy, and realistic aspect ratio', () => {
       beforeEach(() => {
-        result = Mat4.perspective((45 * Math.PI) / 180.0, 640 / 480, 0.1, 200)
+        result.setFromPerspective((45 * Math.PI) / 180.0, 640 / 480, 0.1, 200)
       })
       it('should calculate correct matrix', () => {
         expect(
@@ -365,7 +363,7 @@ describe('mat4', () => {
 
     describe('with no far plane, 45deg fovy, and realistic aspect ratio', () => {
       beforeEach(() => {
-        result = Mat4.perspective((45 * Math.PI) / 180.0, 640 / 480, 0.1, 0)
+        result.setFromPerspective((45 * Math.PI) / 180.0, 640 / 480, 0.1, 0)
       })
       it('should calculate correct matrix', () => {
         expect(result.equalsApproximately(new Mat4(1.81066, 0, 0, 0, 0, 2.414213, 0, 0, 0, 0, -1, -1, 0, 0, -0.2, 0)))
@@ -374,7 +372,7 @@ describe('mat4', () => {
 
     describe('with infinite far plane, 45deg fovy, and realistic aspect ratio', () => {
       beforeEach(() => {
-        result = Mat4.perspective((45 * Math.PI) / 180.0, 640 / 480, 0.1, Infinity)
+        result.setFromPerspective((45 * Math.PI) / 180.0, 640 / 480, 0.1, Infinity)
       })
       it('should calculate correct matrix', () => {
         expect(result.equalsApproximately(new Mat4(1.81066, 0, 0, 0, 0, 2.414213, 0, 0, 0, 0, -1, -1, 0, 0, -0.2, 0)))
@@ -384,7 +382,7 @@ describe('mat4', () => {
 
   describe('ortho', () => {
     beforeEach(() => {
-      result = Mat4.ortho(-1, 1, -1, 1, -1, 1)
+      result.setFromOrtho(-1, 1, -1, 1, -1, 1)
     })
     it('should place values into out', () => {
       expect(result.equalsApproximately(new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)))
@@ -400,11 +398,11 @@ describe('mat4', () => {
         view = new Vec3(0, -1, 0)
         up = new Vec3(0, 0, -1)
         right = new Vec3(1, 0, 0)
-        result = Mat4.lookAt(new Vec3(), view, up)
+        result.setFromLookAt(Vec3.zero(), view, up)
       })
 
       it('should transform view into local -Z', () => {
-        v3 = new Vec3().transformMat4(result)
+        v3 = Vec3.zero().transformMat4(result)
         expect(v3.equalsApproximately(new Vec3(0, 0, -1)))
       })
 
@@ -421,7 +419,7 @@ describe('mat4', () => {
 
     describe('#74', () => {
       beforeEach(() => {
-        result = Mat4.lookAt(new Vec3(0, 2, 0), new Vec3(0, 0.6, 0), new Vec3(0, 0, -1))
+        result.setFromLookAt(new Vec3(0, 2, 0), new Vec3(0, 0.6, 0), new Vec3(0, 0, -1))
       })
 
       it("should transform a point 'above' into local +Y", () => {
@@ -444,7 +442,7 @@ describe('mat4', () => {
       const eye = new Vec3(0, 0, 1)
       const center = new Vec3(0, 0, -1)
       up = new Vec3(0, 1, 0)
-      result = Mat4.lookAt(eye, center, up)
+      result.setFromLookAt(eye, center, up)
       it('should place values into out', () => {
         expect(result.equalsApproximately(new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1, 1)))
       })
@@ -454,14 +452,14 @@ describe('mat4', () => {
   describe('targetTo', () => {
     let up = new Vec3(0, 1, 0)
     let view: Vec3, right: Vec3
-    const v3 = new Vec3()
+    const v3 = Vec3.zero()
 
     describe('looking down', () => {
       beforeEach(() => {
         view = new Vec3(0, -1, 0)
         up = new Vec3(0, 0, -1)
         right = new Vec3(1, 0, 0)
-        result = Mat4.targetTo(new Vec3(), view, up)
+        result.setFromTargetTo(Vec3.zero(), view, up)
       })
 
       it('should transform view into local Z', () => {
@@ -487,7 +485,7 @@ describe('mat4', () => {
 
     describe('#74', () => {
       beforeEach(() => {
-        result = Mat4.targetTo(new Vec3(0, 2, 0), new Vec3(0, 0.6, 0), new Vec3(0, 0, -1))
+        result.setFromTargetTo(new Vec3(0, 2, 0), new Vec3(0, 0.6, 0), new Vec3(0, 0, -1))
       })
 
       it("should transform a point 'above' into local +Y", () => {
@@ -516,7 +514,7 @@ describe('mat4', () => {
 
     describe('scaling test', () => {
       beforeEach(() => {
-        result = Mat4.targetTo(new Vec3(0, 1, 0), new Vec3(0, 0, 1), new Vec3(0, 0, -1))
+        result.setFromTargetTo(new Vec3(0, 1, 0), new Vec3(0, 0, 1), new Vec3(0, 0, -1))
       })
 
       it('scaling should be [1, 1, 1]', () => {
@@ -603,7 +601,7 @@ describe('mat4', () => {
   })
 
   describe('exactEquals', () => {
-    const matC = new Mat4()
+    const matC = Mat4.identity()
     let r0: boolean, r1: boolean
     beforeEach(() => {
       matA.set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
@@ -628,8 +626,8 @@ describe('mat4', () => {
   })
 
   describe('equals', () => {
-    const matC = new Mat4()
-    const matD = new Mat4()
+    const matC = Mat4.identity()
+    const matD = Mat4.identity()
     let r0: boolean, r1: boolean, r2: boolean
     beforeEach(() => {
       matA.set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])

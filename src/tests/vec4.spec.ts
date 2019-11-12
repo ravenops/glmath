@@ -3,9 +3,9 @@ import { equalsApproximately } from '../lib/common'
 import { Vec3 } from '../lib/vec3'
 
 describe('vec4', () => {
-  const vecA = new Vec4()
-  const vecB = new Vec4()
-  let result = new Vec4()
+  const vecA = Vec4.zero()
+  const vecB = Vec4.zero()
+  let result = Vec4.zero()
 
   beforeEach(() => {
     vecA.set([1, 2, 3, 4])
@@ -14,7 +14,7 @@ describe('vec4', () => {
 
   describe('create', () => {
     beforeEach(() => {
-      result = new Vec4()
+      result = Vec4.zero()
     })
     it('should return a 4 element array initialized to 0s', () => {
       expect(result.equalsApproximately(new Vec4(0, 0, 0, 0)))
@@ -353,7 +353,7 @@ describe('vec4', () => {
   })
 
   describe('cross', () => {
-    const vecC = new Vec4()
+    const vecC = Vec4.zero()
     beforeEach(() => {
       vecA.set([1, 0, 0, 0])
       vecB.set([0, 1, 0, 0])
@@ -386,7 +386,7 @@ describe('vec4', () => {
   })
 
   describe('exactEquals', () => {
-    const vecC = new Vec4()
+    const vecC = Vec4.zero()
     let r0: boolean, r1: boolean
     beforeEach(() => {
       vecA.set([0, 1, 2, 3])
@@ -411,8 +411,8 @@ describe('vec4', () => {
   })
 
   describe('equals', () => {
-    const vecC = new Vec4()
-    const vecD = new Vec4()
+    const vecC = Vec4.zero()
+    const vecD = Vec4.zero()
     let r0: boolean, r1: boolean, r2: boolean
     beforeEach(() => {
       vecA.set([0, 1, 2, 3])

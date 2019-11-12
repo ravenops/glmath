@@ -6,14 +6,24 @@ import { Quat } from './quat'
 
 // 3 Dimensional Vector
 export class Vec3 extends Float32Array {
-  constructor(x = 0, y = 0, z = 0) {
+  constructor(x: number, y: number, z: number) {
     super(3)
     this.set([x, y, z])
   }
 
-  static fromV2(v: Vec2): Vec3 {
+  setfromV2(v: Vec2): Vec3 {
     const [x, y] = v
-    return new Vec3(x, y)
+    this[0] = x
+    this[1] = y
+    return this
+  }
+
+  static zero(): Vec3 {
+    return new Vec3(0, 0, 0)
+  }
+
+  static one(): Vec3 {
+    return new Vec3(1, 1, 1)
   }
 
   static right(): Vec3 {

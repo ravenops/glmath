@@ -8,15 +8,37 @@ export interface AxisAngle {
 }
 
 export class Quat extends Float32Array {
-  constructor(x = 0, y = 0, z = 0, w = 1) {
+  constructor(x: number, y: number, z: number, w: number) {
     super(4)
-    this.set([x, y, z, w])
+    this[0] = x
+    this[1] = y
+    this[2] = z
+    this[3] = w
   }
 
-  static setAxisAngle(axis: Vec3, rad: number): Quat {
+  identity() {
+    this[0] = 0
+    this[1] = 0
+    this[2] = 0
+    this[3] = 1
+  }
+
+  static identity(): Quat {
+    return new Quat(0, 0, 0, 1)
+  }
+
+  static zero(): Quat {
+    return new Quat(0, 0, 0, 0)
+  }
+
+  setFromAxisAngle(axis: Vec3, rad: number): Quat {
     rad *= 0.5
     const s = Math.sin(rad)
-    return new Quat(s * axis[0], s * axis[1], s * axis[2], Math.cos(rad))
+    this[0] = s * axis[0]
+    this[1] = s * axis[1]
+    this[2] = s * axis[2]
+    this[3] = Math.cos(rad)
+    return this
   }
 
   /**
@@ -221,21 +243,20 @@ export class Quat extends Float32Array {
    * to renormalize the quaternion yourself where necessary.
    *
    */
-  static fromMat3(m: Mat3): Quat {
+  setFromMat3(m: Mat3): Quat {
     // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
     // article "Quaternion Calculus and Fast Animation".
     const fTrace = m[0] + m[4] + m[8]
     let fRoot = 0
 
-    const q = new Quat()
     if (fTrace > 0.0) {
       // |w| > 1/2, may as well choose w > 1/2
       fRoot = sqrt(fTrace + 1.0) // 2w
-      q[3] = 0.5 * fRoot
+      this[3] = 0.5 * fRoot
       fRoot = 0.5 / fRoot // 1/(4w)
-      q[0] = (m[5] - m[7]) * fRoot
-      q[1] = (m[6] - m[2]) * fRoot
-      q[2] = (m[1] - m[3]) * fRoot
+      this[0] = (m[5] - m[7]) * fRoot
+      this[1] = (m[6] - m[2]) * fRoot
+      this[2] = (m[1] - m[3]) * fRoot
     } else {
       // |w| <= 1/2
       let i = 0
@@ -245,18 +266,18 @@ export class Quat extends Float32Array {
       const k = (i + 2) % 3
 
       fRoot = sqrt(m[i * 3 + i] - m[j * 3 + j] - m[k * 3 + k] + 1.0)
-      q[i] = 0.5 * fRoot
+      this[i] = 0.5 * fRoot
       fRoot = 0.5 / fRoot
-      q[3] = (m[j * 3 + k] - m[k * 3 + j]) * fRoot
-      q[j] = (m[j * 3 + i] + m[i * 3 + j]) * fRoot
-      q[k] = (m[k * 3 + i] + m[i * 3 + k]) * fRoot
+      this[3] = (m[j * 3 + k] - m[k * 3 + j]) * fRoot
+      this[j] = (m[j * 3 + i] + m[i * 3 + j]) * fRoot
+      this[k] = (m[k * 3 + i] + m[i * 3 + k]) * fRoot
     }
 
-    return q
+    return this
   }
 
   // Creates a quaternion from the given euler angle x, y, z.in degrees
-  static fromEulerDegrees(x: number, y: number, z: number): Quat {
+  setFromEulerDegrees(x: number, y: number, z: number): Quat {
     const halfToRad = 0.5 * degree2rad
     x *= halfToRad
     y *= halfToRad
@@ -269,12 +290,11 @@ export class Quat extends Float32Array {
     const sz = Math.sin(z)
     const cz = Math.cos(z)
 
-    return new Quat(
-      sx * cy * cz - cx * sy * sz,
-      cx * sy * cz + sx * cy * sz,
-      cx * cy * sz - sx * sy * cz,
-      cx * cy * cz + sx * sy * sz,
-    )
+    this[0] = sx * cy * cz - cx * sy * sz
+    this[1] = cx * sy * cz + sx * cy * sz
+    this[2] = cx * cy * sz - sx * sy * cz
+    this[3] = cx * cy * cz + sx * sy * sz
+    return this
   }
 
   toString(): string {
@@ -371,7 +391,7 @@ export class Quat extends Float32Array {
           .cross(a)
           .normalize()
 
-        this.copy(Quat.setAxisAngle(axis, Math.PI))
+        this.setFromAxisAngle(axis, Math.PI)
         return this
       }
     } else if (dot > 0.999999) {
@@ -389,8 +409,8 @@ export class Quat extends Float32Array {
 
   // Performs a spherical linear interpolation with two control points
   sqlerp(a: Quat, b: Quat, c: Quat, d: Quat, t: number): Quat {
-    const temp1 = new Quat().slerp(a, d, t)
-    const temp2 = new Quat().slerp(b, c, t)
+    const temp1 = Quat.identity().slerp(a, d, t)
+    const temp2 = Quat.identity().slerp(b, c, t)
     this.slerp(temp1, temp2, 2 * t * (1 - t))
     return this
   }
@@ -404,8 +424,8 @@ export class Quat extends Float32Array {
    * @param {vec3} right the vector representing the local "right" direction
    * @param {vec3} up    the vector representing the local "up" direction
    */
-  static fromAxes(view: Vec3, right: Vec3, up: Vec3): Quat {
+  setFromAxes(view: Vec3, right: Vec3, up: Vec3): Quat {
     const m = new Mat3(right[0], up[0], -view[0], right[1], up[1], -view[1], right[2], up[2], -view[2])
-    return Quat.fromMat3(m).normalize()
+    return this.setFromMat3(m).normalize()
   }
 }

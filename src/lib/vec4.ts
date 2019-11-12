@@ -4,12 +4,20 @@ import { Mat4 } from './mat44'
 import { Vec3 } from './vec3'
 
 export class Vec4 extends Float32Array {
-  constructor(x = 0, y = 0, z = 0, w = 0) {
+  constructor(x: number, y: number, z: number, w: number) {
     super(4)
     this[0] = x
     this[1] = y
     this[2] = z
     this[3] = w
+  }
+
+  static zero(): Vec4 {
+    return new Vec4(0, 0, 0, 0)
+  }
+
+  static one(): Vec4 {
+    return new Vec4(1, 1, 1, 1)
   }
 
   clone(): Vec4 {

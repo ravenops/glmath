@@ -27,22 +27,22 @@ export class Mat4 extends Float32Array {
    * @returns {mat4} A new mat4
    */
   constructor(
-    m00 = 1,
-    m01 = 0,
-    m02 = 0,
-    m03 = 0,
-    m10 = 0,
-    m11 = 1,
-    m12 = 0,
-    m13 = 0,
-    m20 = 0,
-    m21 = 0,
-    m22 = 1,
-    m23 = 0,
-    m30 = 0,
-    m31 = 0,
-    m32 = 0,
-    m33 = 1,
+    m00: number,
+    m01: number,
+    m02: number,
+    m03: number,
+    m10: number,
+    m11: number,
+    m12: number,
+    m13: number,
+    m20: number,
+    m21: number,
+    m22: number,
+    m23: number,
+    m30: number,
+    m31: number,
+    m32: number,
+    m33: number,
   ) {
     super(16)
     this[0] = m00
@@ -104,7 +104,7 @@ export class Mat4 extends Float32Array {
     return this
   }
 
-  setIdentity(): Mat4 {
+  identity(): Mat4 {
     this.set([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
     return this
   }
@@ -407,17 +407,50 @@ export class Mat4 extends Float32Array {
     return this
   }
 
-  static fromTranslation(v: Vec3): Mat4 {
+  setFromTranslation(v: Vec3): Mat4 {
     const [x, y, z] = v
-    return new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1)
+
+    this[0] = 1
+    this[1] = 0
+    this[2] = 0
+    this[3] = 0
+    this[4] = 0
+    this[5] = 1
+    this[6] = 0
+    this[7] = 0
+    this[8] = 0
+    this[9] = 0
+    this[10] = 1
+    this[11] = 0
+    this[12] = x
+    this[13] = y
+    this[14] = z
+    this[15] = 1
+    return this
   }
 
-  static fromScaling(v: Vec3): Mat4 {
+  setFromScaling(v: Vec3): Mat4 {
     const [x, y, z] = v
-    return new Mat4(x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1)
+    this[0] = x
+    this[1] = 0
+    this[2] = 0
+    this[3] = 0
+    this[4] = 0
+    this[5] = y
+    this[6] = 0
+    this[7] = 0
+    this[8] = 0
+    this[9] = 0
+    this[10] = z
+    this[11] = 0
+    this[12] = 0
+    this[13] = 0
+    this[14] = 0
+    this[15] = 1
+    return this
   }
 
-  static fromRotation(axis: Vec3, rad: number): Mat4 {
+  setFromRotation(axis: Vec3, rad: number): Mat4 {
     let len = axis.length
 
     if (len < EPSILON) {
@@ -435,51 +468,99 @@ export class Mat4 extends Float32Array {
     const t = 1 - c
 
     // Perform rotation-specific matrix multiplication
-    return new Mat4(
-      x * x * t + c,
-      y * x * t + z * s,
-      z * x * t - y * s,
-      0,
-      x * y * t - z * s,
-      y * y * t + c,
-      z * y * t + x * s,
-      0,
-      x * z * t + y * s,
-      y * z * t - x * s,
-      z * z * t + c,
-      0,
-      0,
-      0,
-      0,
-      1,
-    )
+    this[0] = x * x * t + c
+    this[1] = y * x * t + z * s
+    this[2] = z * x * t - y * s
+    this[3] = 0
+    this[4] = x * y * t - z * s
+    this[5] = y * y * t + c
+    this[6] = z * y * t + x * s
+    this[7] = 0
+    this[8] = x * z * t + y * s
+    this[9] = y * z * t - x * s
+    this[10] = z * z * t + c
+    this[11] = 0
+    this[12] = 0
+    this[13] = 0
+    this[14] = 0
+    this[15] = 1
+    return this
   }
 
-  static fromXRotation(rad: number): Mat4 {
+  setFromXRotation(rad: number): Mat4 {
     const c = Math.cos(rad)
     const s = Math.sin(rad)
 
     // Perform axis-specific matrix multiplication
-    return new Mat4(1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1)
+    this[0] = 1
+    this[1] = 0
+    this[2] = 0
+    this[3] = 0
+    this[4] = 0
+    this[5] = c
+    this[6] = s
+    this[7] = 0
+    this[8] = 0
+    this[9] = -s
+    this[10] = c
+    this[11] = 0
+    this[12] = 0
+    this[13] = 0
+    this[14] = 0
+    this[15] = 1
+    return this
   }
 
-  static fromYRotation(rad: number): Mat4 {
+  setFromYRotation(rad: number): Mat4 {
     const c = Math.cos(rad)
     const s = Math.sin(rad)
 
     // Perform axis-specific matrix multiplication
-    return new Mat4(c, 0, s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1)
+    this[0] = c
+    this[1] = 0
+    this[2] = s
+    this[3] = 0
+    this[4] = 0
+    this[5] = 1
+    this[6] = 0
+    this[7] = 0
+    this[8] = s
+    this[9] = 0
+    this[10] = c
+    this[11] = 0
+    this[12] = 0
+    this[13] = 0
+    this[14] = 0
+    this[15] = 1
+    return this
   }
 
-  static fromZRotation(rad: number): Mat4 {
+  setFromZRotation(rad: number): Mat4 {
     const c = Math.cos(rad)
     const s = Math.sin(rad)
 
     // Perform axis-specific matrix multiplication
-    return new Mat4(c, s, 0, 0, s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+
+    this[0] = c
+    this[1] = s
+    this[2] = 0
+    this[3] = 0
+    this[4] = s
+    this[5] = c
+    this[6] = 0
+    this[7] = 0
+    this[8] = 0
+    this[9] = 0
+    this[10] = 1
+    this[11] = 0
+    this[12] = 0
+    this[13] = 0
+    this[14] = 0
+    this[15] = 1
+    return this
   }
 
-  static fromTranslationRotation(q: Quat, v: Vec3): Mat4 {
+  setFromTranslationRotation(q: Quat, v: Vec3): Mat4 {
     // Quaternion math
     const [x, y, z, w] = q
     const x2 = x + x
@@ -495,28 +576,27 @@ export class Mat4 extends Float32Array {
     const wy = w * y2
     const wz = w * z2
     const [vx, vy, vz] = v
-    return new Mat4(
-      1 - (yy + zz),
-      xy + wz,
-      xz - wy,
-      0,
-      xy - wz,
-      1 - (xx + zz),
-      yz + wx,
-      0,
-      xz + wy,
-      yz - wx,
-      1 - (xx + yy),
-      0,
-      vx,
-      vy,
-      vz,
-      1,
-    )
+    this[0] = 1 - (yy + zz)
+    this[1] = xy + wz
+    this[2] = xz - wy
+    this[3] = 0
+    this[4] = xy - wz
+    this[5] = 1 - (xx + zz)
+    this[6] = yz + wx
+    this[7] = 0
+    this[8] = xz + wy
+    this[9] = yz - wx
+    this[10] = 1 - (xx + yy)
+    this[11] = 0
+    this[12] = vx
+    this[13] = vy
+    this[14] = vz
+    this[15] = 1
+    return this
   }
 
-  static fromQuat2(a: DualQuat): Mat4 {
-    const translation = new Vec3()
+  setFromQuat2(a: DualQuat): Mat4 {
+    const translation = Vec3.zero()
     const bx = -a[0],
       by = -a[1],
       bz = -a[2],
@@ -537,7 +617,7 @@ export class Mat4 extends Float32Array {
       translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2
       translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2
     }
-    return Mat4.fromTranslationRotation(a.real, translation)
+    return this.setFromTranslationRotation(a.real, translation)
   }
 
   get translation(): Vec3 {
@@ -557,7 +637,7 @@ export class Mat4 extends Float32Array {
     // Algorithm taken from http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
     let S = 0
     const trace = this[0] + this[5] + this[10]
-    const q = new Quat()
+    const q = Quat.identity()
     if (trace > 0) {
       S = sqrt(trace + 1) * 2
       q[3] = 0.25 * S
@@ -587,7 +667,7 @@ export class Mat4 extends Float32Array {
     return q
   }
 
-  static fromTranslationRotationScale(translation: Vec3, rotation: Quat, scaling: Vec3): Mat4 {
+  setFromTranslationRotationScale(translation: Vec3, rotation: Quat, scaling: Vec3): Mat4 {
     // Quaternion math
     const [qx, qy, qz, qw] = rotation
     const x2 = qx + qx
@@ -606,28 +686,29 @@ export class Mat4 extends Float32Array {
     const sy = scaling[1]
     const sz = scaling[2]
     const [vx, vy, vz] = translation
-    return new Mat4(
-      (1 - (yy + zz)) * sx,
-      (xy + wz) * sx,
-      (xz - wy) * sx,
-      0,
-      (xy - wz) * sy,
-      (1 - (xx + zz)) * sy,
-      (yz + wx) * sy,
-      0,
-      (xz + wy) * sz,
-      (yz - wx) * sz,
-      (1 - (xx + yy)) * sz,
-      0,
-      vx,
-      vy,
-      vz,
-      1,
-    )
+
+    this[0] = (1 - (yy + zz)) * sx
+    this[1] = (xy + wz) * sx
+    this[2] = (xz - wy) * sx
+    this[3] = 0
+    this[4] = (xy - wz) * sy
+    this[5] = (1 - (xx + zz)) * sy
+    this[6] = (yz + wx) * sy
+    this[7] = 0
+    this[8] = (xz + wy) * sz
+    this[9] = (yz - wx) * sz
+    this[10] = (1 - (xx + yy)) * sz
+    this[11] = 0
+    this[12] = vx
+    this[13] = vy
+    this[14] = vz
+    this[15] = 1
+
+    return this
   }
 
   // Creates a matrix from a quaternion rotation, vector translation and vector scale, rotating and scaling around the given origin
-  static fromRotationTranslationScaleOrigin(translation: Vec3, rotation: Quat, scaling: Vec3, origin: Vec3): Mat4 {
+  setFromRotationTranslationScaleOrigin(translation: Vec3, rotation: Quat, scaling: Vec3, origin: Vec3): Mat4 {
     // Quaternion math
     const [x, y, z, w] = rotation
     const x2 = x + x
@@ -644,24 +725,27 @@ export class Mat4 extends Float32Array {
     const wz = w * z2
     const [sx, sy, sz] = scaling
     const [ox, oy, oz] = origin
-    const out0 = (1 - (yy + zz)) * sx
-    const out1 = (xy + wz) * sx
-    const out2 = (xz - wy) * sx
-    const out4 = (xy - wz) * sy
-    const out5 = (1 - (xx + zz)) * sy
-    const out6 = (yz + wx) * sy
-    const out8 = (xz + wy) * sz
-    const out9 = (yz - wx) * sz
-    const out10 = (1 - (xx + yy)) * sz
     const [vx, vy, vz] = translation
-    const out12 = vx + ox - (out0 * ox + out4 * oy + out8 * oz)
-    const out13 = vy + oy - (out1 * ox + out5 * oy + out9 * oz)
-    const out14 = vz + oz - (out2 * ox + out6 * oy + out10 * oz)
-
-    return new Mat4(out0, out1, out2, 0, out4, out5, out6, 0, out8, out9, out10, 0, out12, out13, out14, 1)
+    this[0] = (1 - (yy + zz)) * sx
+    this[1] = (xy + wz) * sx
+    this[2] = (xz - wy) * sx
+    this[3] = 0
+    this[4] = (xy - wz) * sy
+    this[5] = (1 - (xx + zz)) * sy
+    this[6] = (yz + wx) * sy
+    this[7] = 0
+    this[8] = (xz + wy) * sz
+    this[9] = (yz - wx) * sz
+    this[10] = (1 - (xx + yy)) * sz
+    this[11] = 0
+    this[12] = vx + ox - (this[0] * ox + this[4] * oy + this[8] * oz)
+    this[13] = vy + oy - (this[1] * ox + this[5] * oy + this[9] * oz)
+    this[14] = vz + oz - (this[2] * ox + this[6] * oy + this[10] * oz)
+    this[15] = 1
+    return this
   }
 
-  static fromQuat(q: Quat): Mat4 {
+  setFromQuat(q: Quat): Mat4 {
     const [x, y, z, w] = q
     const x2 = x + x
     const y2 = y + y
@@ -675,51 +759,52 @@ export class Mat4 extends Float32Array {
     const wx = w * x2
     const wy = w * y2
     const wz = w * z2
-    return new Mat4(
-      1 - yy - zz,
-      yx + wz,
-      zx - wy,
-      0,
-      yx - wz,
-      1 - xx - zz,
-      zy + wx,
-      0,
-      zx + wy,
-      zy - wx,
-      1 - xx - yy,
-      0,
-      0,
-      0,
-      0,
-      1,
-    )
+
+    this[0] = 1 - yy - zz
+    this[1] = yx + wz
+    this[2] = zx - wy
+    this[3] = 0
+    this[4] = yx - wz
+    this[5] = 1 - xx - zz
+    this[6] = zy + wx
+    this[7] = 0
+    this[8] = zx + wy
+    this[9] = zy - wx
+    this[10] = 1 - xx - yy
+    this[11] = 0
+    this[12] = 0
+    this[13] = 0
+    this[14] = 0
+    this[15] = 1
+    return this
   }
 
-  static frustum(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {
+  setFromFrustum(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {
     const rl = 1 / (right - left)
     const tb = 1 / (top - bottom)
     const nf = 1 / (near - far)
-    return new Mat4(
-      near * 2 * rl,
-      0,
-      0,
-      0,
-      0,
-      near * 2 * tb,
-      0,
-      0,
-      (right + left) * rl,
-      (top + bottom) * tb,
-      (far + near) * nf,
-      -1,
-      0,
-      0,
-      far * near * 2 * nf,
-      0,
-    )
+
+    this[0] = near * 2 * rl
+    this[1] = 0
+    this[2] = 0
+    this[3] = 0
+    this[4] = 0
+    this[5] = near * 2 * tb
+    this[6] = 0
+    this[7] = 0
+    this[8] = (right + left) * rl
+    this[9] = (top + bottom) * tb
+    this[10] = (far + near) * nf
+    this[11] = -1
+    this[12] = 0
+    this[13] = 0
+    this[14] = far * near * 2 * nf
+    this[15] = 0
+
+    return this
   }
 
-  static perspective(fovy: number, aspect: number, near: number, far?: number): Mat4 {
+  setFromPerspective(fovy: number, aspect: number, near: number, far?: number): Mat4 {
     const f = 1.0 / Math.tan(fovy / 2)
     let m10 = -1
     let m14 = -2 * near
@@ -728,12 +813,28 @@ export class Mat4 extends Float32Array {
       m10 = (far + near) * nf
       m14 = 2 * far * near * nf
     }
-    return new Mat4(f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, m10, -1, 0, 0, m14, 0)
+    this[0] = f / aspect
+    this[1] = 0
+    this[2] = 0
+    this[3] = 0
+    this[4] = 0
+    this[5] = f
+    this[6] = 0
+    this[7] = 0
+    this[8] = 0
+    this[9] = 0
+    this[10] = m10
+    this[11] = -1
+    this[12] = 0
+    this[13] = 0
+    this[14] = m14
+    this[15] = 0
+    return this
   }
 
   // Generates a perspective projection matrix with the given field of view.
   //  This is primarily useful for generating projection matrices to be used with the still experiemental WebVR API.
-  static perspectiveFromFieldOfView(
+  setFromPerspectiveFromFieldOfView(
     fovDegrees: { up: number; down: number; left: number; right: number },
     near: number,
     far: number,
@@ -744,53 +845,51 @@ export class Mat4 extends Float32Array {
     const rightTan = Math.tan(fovDegrees.right * deg2rad)
     const xScale = 2.0 / (leftTan + rightTan)
     const yScale = 2.0 / (upTan + downTan)
-    return new Mat4(
-      xScale,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      yScale,
-      0.0,
-      0.0,
-      -((leftTan - rightTan) * xScale * 0.5),
-      (upTan - downTan) * yScale * 0.5,
-      far / (near - far),
-      -1.0,
-      0.0,
-      0.0,
-      (far * near) / (near - far),
-      0.0,
-    )
+    this[0] = xScale
+    this[1] = 0.0
+    this[2] = 0.0
+    this[3] = 0.0
+    this[4] = 0.0
+    this[5] = yScale
+    this[6] = 0.0
+    this[7] = 0.0
+    this[8] = -((leftTan - rightTan) * xScale * 0.5)
+    this[9] = (upTan - downTan) * yScale * 0.5
+    this[10] = far / (near - far)
+    this[11] = -1.0
+    this[12] = 0.0
+    this[13] = 0.0
+    this[14] = (far * near) / (near - far)
+    this[15] = 0.0
+    return this
   }
 
-  static ortho(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {
+  setFromOrtho(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {
     const lr = 1 / (left - right)
     const bt = 1 / (bottom - top)
     const nf = 1 / (near - far)
-    return new Mat4(
-      -2 * lr,
-      0,
-      0,
-      0,
-      0,
-      -2 * bt,
-      0,
-      0,
-      0,
-      0,
-      2 * nf,
-      0,
-      (left + right) * lr,
-      (top + bottom) * bt,
-      (far + near) * nf,
-      1,
-    )
+    this[0] = -2 * lr
+    this[1] = 0
+    this[2] = 0
+    this[3] = 0
+    this[4] = 0
+    this[5] = -2 * bt
+    this[6] = 0
+    this[7] = 0
+    this[8] = 0
+    this[9] = 0
+    this[10] = 2 * nf
+    this[11] = 0
+    this[12] = (left + right) * lr
+    this[13] = (top + bottom) * bt
+    this[14] = (far + near) * nf
+    this[15] = 1
+    return this
   }
 
   // Generates a look-at matrix with the given eye position, focal point, and up axis.
   // If you want a matrix that actually makes an object look at another object, you should use targetTo instead.
-  static lookAt(eye: Vec3, center: Vec3, up: Vec3): Mat4 {
+  setFromLookAt(eye: Vec3, center: Vec3, up: Vec3): Mat4 {
     const [ex, ey, ez] = eye
     const [cx, cy, cz] = center
     const [ux, uy, uz] = up
@@ -828,28 +927,28 @@ export class Mat4 extends Float32Array {
 
     len = inverseSqrt(y0 * y0 + y1 * y1 + y2 * y2)
 
-    return new Mat4(
-      x0,
-      y0,
-      z0,
-      0,
-      x1,
-      y1,
-      z1,
-      0,
-      x2,
-      y2,
-      z2,
-      0,
-      -(x0 * ex + x1 * ey + x2 * ez),
-      -(y0 * ex + y1 * ey + y2 * ez),
-      -(z0 * ex + z1 * ey + z2 * ez),
-      1,
-    )
+    this[0] = x0
+    this[1] = y0
+    this[2] = z0
+    this[3] = 0
+    this[4] = x1
+    this[5] = y1
+    this[6] = z1
+    this[7] = 0
+    this[8] = x2
+    this[9] = y2
+    this[10] = z2
+    this[11] = 0
+    this[12] = -(x0 * ex + x1 * ey + x2 * ez)
+    this[13] = -(y0 * ex + y1 * ey + y2 * ez)
+    this[14] = -(z0 * ex + z1 * ey + z2 * ez)
+    this[15] = 1
+
+    return this
   }
 
   // Generates a matrix that makes something look at something else.
-  static targetTo(eye: Vec3, target: Vec3, up: Vec3): Mat4 {
+  setFromTargetTo(eye: Vec3, target: Vec3, up: Vec3): Mat4 {
     const [ex, ey, ez] = eye
     const [ux, uy, uz] = up
     let z0 = ex - target[0],
@@ -865,24 +964,23 @@ export class Mat4 extends Float32Array {
       x2 = ux * z1 - uy * z0
     len = inverseSqrt(x0 * x0 + x1 * x1 + x2 * x2)
 
-    return new Mat4(
-      x0,
-      x1,
-      x2,
-      0,
-      z1 * x2 - z2 * x1,
-      z2 * x0 - z0 * x2,
-      z0 * x1 - z1 * x0,
-      0,
-      z0,
-      z1,
-      z2,
-      0,
-      ex,
-      ey,
-      ez,
-      1,
-    )
+    this[0] = x0
+    this[1] = x1
+    this[2] = x2
+    this[3] = 0
+    this[4] = z1 * x2 - z2 * x1
+    this[5] = z2 * x0 - z0 * x2
+    this[6] = z0 * x1 - z1 * x0
+    this[7] = 0
+    this[8] = z0
+    this[9] = z1
+    this[10] = z2
+    this[11] = 0
+    this[12] = ex
+    this[13] = ey
+    this[14] = ez
+    this[15] = 1
+    return this
   }
 
   toString(): string {

@@ -5,9 +5,9 @@ import { Vec3 } from '../lib/vec3'
 import { equalsApproximately } from '../lib/common'
 
 describe('vec2', () => {
-  const vecA = new Vec2()
-  const vecB = new Vec2()
-  let result = new Vec2()
+  const vecA = Vec2.zero()
+  const vecB = Vec2.zero()
+  let result = Vec2.zero()
 
   beforeEach(() => {
     vecA.set([1, 2])
@@ -351,7 +351,7 @@ describe('vec2', () => {
   })
 
   describe('transformMat2', () => {
-    const matA = new Mat2()
+    const matA = Mat2.identity()
     beforeEach(() => {
       matA.set([1, 2, 3, 4])
     })
@@ -373,7 +373,7 @@ describe('vec2', () => {
   })
 
   describe('transformMat23', () => {
-    const matA = new Mat23()
+    const matA = Mat23.identity()
     beforeEach(() => {
       matA.set([1, 2, 3, 4, 5, 6])
     })
@@ -448,7 +448,7 @@ describe('vec2', () => {
   })
 
   describe('exactEquals', () => {
-    const vecC = new Vec2()
+    const vecC = Vec2.zero()
     let r0: boolean, r1: boolean
     beforeEach(() => {
       vecA.set([0, 1])
@@ -473,8 +473,8 @@ describe('vec2', () => {
   })
 
   describe('equals', () => {
-    const vecC = new Vec2()
-    const vecD = new Vec2()
+    const vecC = Vec2.zero()
+    const vecD = Vec2.zero()
     let r0: boolean, r1: boolean, r2: boolean
 
     beforeEach(() => {
@@ -509,7 +509,7 @@ describe('vec2', () => {
       result.zero()
     })
     it('should result in a 2 element vector with zeros', () => {
-      expect(result.equalsApproximately(new Vec2()))
+      expect(result.equalsApproximately(Vec2.zero()))
     })
   })
 })

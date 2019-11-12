@@ -6,15 +6,29 @@ import { Mat4 } from './mat44'
 import { Vec3 } from './vec3'
 
 export class Vec2 extends Float32Array {
-  constructor(x = 0, y = 0) {
+  constructor(x: number, y: number) {
     super(2)
     this[0] = x
     this[1] = y
   }
 
+  static zero(): Vec2 {
+    return new Vec2(0, 0)
+  }
+
   zero(): Vec2 {
     this[0] = 0
     this[1] = 0
+    return this
+  }
+
+  static one(): Vec2 {
+    return new Vec2(1, 1)
+  }
+
+  one(): Vec2 {
+    this[0] = 1
+    this[1] = 1
     return this
   }
 

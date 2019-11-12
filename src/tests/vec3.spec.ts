@@ -5,9 +5,9 @@ import { Quat } from '../lib/quat'
 import { equalsApproximately } from '../lib/common'
 
 describe('vec3', () => {
-  const vecA = new Vec3()
-  const vecB = new Vec3()
-  let result = new Vec3()
+  const vecA = Vec3.zero()
+  const vecB = Vec3.zero()
+  let result = Vec3.zero()
 
   beforeEach(() => {
     vecA.set([1, 2, 3])
@@ -101,7 +101,7 @@ describe('vec3', () => {
 
     describe('with a lookAt', () => {
       beforeEach(() => {
-        matr = Mat4.lookAt(new Vec3(5, 6, 7), new Vec3(2, 6, 7), new Vec3(0, 1, 0))
+        matr.setFromLookAt(new Vec3(5, 6, 7), new Vec3(2, 6, 7), new Vec3(0, 1, 0))
       })
 
       beforeEach(() => {
@@ -123,7 +123,7 @@ describe('vec3', () => {
   })
 
   describe('transformMat3', () => {
-    let matr = new Mat3()
+    const matr = Mat3.identity()
     describe('with an identity', () => {
       beforeEach(() => {
         matr.set([1, 0, 0, 0, 1, 0, 0, 0, 1])
@@ -170,8 +170,9 @@ describe('vec3', () => {
 
     describe('with a lookAt normal matrix', () => {
       beforeEach(() => {
-        const m4 = Mat4.lookAt(new Vec3(5, 6, 7), new Vec3(2, 6, 7), new Vec3(0, 1, 0))
-        matr = Mat3.fromMat4(m4)
+        const m4 = Mat4.identity().setFromLookAt(new Vec3(5, 6, 7), new Vec3(2, 6, 7), new Vec3(0, 1, 0))
+        matr
+          .setFromMat4(m4)
           .invert()
           .transpose()
       })
@@ -199,7 +200,7 @@ describe('vec3', () => {
 
   describe('create', () => {
     beforeEach(() => {
-      result = new Vec3()
+      result = Vec3.zero()
     })
     it('should return a 3 element array initialized to 0s', () => {
       expect(result.equalsApproximately(new Vec3(0, 0, 0)))
@@ -570,7 +571,7 @@ describe('vec3', () => {
   })
 
   describe('exactEquals', () => {
-    const vecC = new Vec3()
+    const vecC = Vec3.zero()
     let r0: boolean, r1: boolean
     beforeEach(() => {
       vecA.set([0, 1, 2])
@@ -595,8 +596,8 @@ describe('vec3', () => {
   })
 
   describe('equals', () => {
-    const vecC = new Vec3()
-    const vecD = new Vec3()
+    const vecC = Vec3.zero()
+    const vecD = Vec3.zero()
     let r0: boolean, r1: boolean, r2: boolean
     beforeEach(() => {
       vecA.set([0, 1, 2])

@@ -40,7 +40,7 @@ describe('mat2', () => {
 
   describe('identity', () => {
     beforeEach(() => {
-      result = new Mat2()
+      result = Mat2.identity()
     })
     it('should place values into out', () => {
       expect(result.equalsApproximately(identity))

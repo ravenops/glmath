@@ -21,7 +21,7 @@ import { Vec2 } from './vec2'
  * The last column is ignored so the array is shorter and operations are faster.
  */
 export class Mat23 extends Float32Array {
-  constructor(a = 1, b = 0, c = 0, d = 1, tx = 0, ty = 0) {
+  constructor(a: number, b: number, c: number, d: number, tx: number, ty: number) {
     super(6)
     this[0] = a
     this[1] = b
@@ -29,6 +29,10 @@ export class Mat23 extends Float32Array {
     this[3] = d
     this[4] = tx
     this[5] = ty
+  }
+
+  static identity(): Mat23 {
+    return new Mat23(1, 0, 0, 1, 0, 0)
   }
 
   setIdentity(): Mat23 {
@@ -48,16 +52,6 @@ export class Mat23 extends Float32Array {
     this[4] = b[4]
     this[5] = b[5]
     return this
-  }
-
-  /**
-   * Set a mat2d to the identity matrix
-   *
-   * @param {mat2d} out the receiving matrix
-   * @returns {mat2d} out
-   */
-  static identity(): Mat23 {
-    return new Mat23(1, 0, 0, 1, 0, 0)
   }
 
   invert(): Mat23 {
@@ -121,17 +115,17 @@ export class Mat23 extends Float32Array {
     return this
   }
 
-  static fromRotation(rad: number): Mat23 {
+  fromRotation(rad: number): Mat23 {
     const c = Math.cos(rad)
     const s = Math.sin(rad)
     return new Mat23(c, s, -s, c, 0, 0)
   }
 
-  static fromScaling(v: Vec2): Mat23 {
+  fromScaling(v: Vec2): Mat23 {
     return new Mat23(v[0], 0, 0, v[1], 0, 0)
   }
 
-  static fromTranslation(v: Vec2): Mat23 {
+  fromTranslation(v: Vec2): Mat23 {
     return new Mat23(1, 0, 0, 1, v[0], v[1])
   }
 

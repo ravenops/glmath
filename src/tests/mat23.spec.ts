@@ -3,9 +3,9 @@ import { Mat23 } from '../lib/mat23'
 import { Vec2 } from '../lib/vec2'
 
 describe('mat2d', () => {
-  const matA = new Mat23()
-  const matB = new Mat23()
-  let result = new Mat23()
+  const matA = Mat23.identity()
+  const matB = Mat23.identity()
+  let result = Mat23.identity()
   const identity = Mat23.identity()
 
   beforeEach(() => {
@@ -15,7 +15,7 @@ describe('mat2d', () => {
 
   describe('create', () => {
     beforeEach(() => {
-      result = new Mat23()
+      result = Mat23.identity()
     })
     it('should return a 6 element array initialized to a 2x3 identity matrix', () => {
       expect(result.equalsApproximately(identity))
@@ -190,7 +190,7 @@ describe('mat2d', () => {
   })
 
   describe('exactEquals', () => {
-    const matC = new Mat23()
+    const matC = Mat23.identity()
     let r0: boolean, r1: boolean
     beforeEach(() => {
       matA.set([0, 1, 2, 3, 4, 5])
@@ -215,8 +215,8 @@ describe('mat2d', () => {
   })
 
   describe('equals', () => {
-    const matC = new Mat23()
-    const matD = new Mat23()
+    const matC = Mat23.identity()
+    const matD = Mat23.identity()
     let r0: boolean, r1: boolean, r2: boolean
     beforeEach(() => {
       matA.set([0, 1, 2, 3, 4, 5])

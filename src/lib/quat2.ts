@@ -6,7 +6,16 @@ import { Mat4 } from './mat44'
 // Dual Quaternion.  Format: [real, dual]
 // Make sure to have normalized dual quaternions, otherwise the functions may not work as intended.<br>
 export class DualQuat extends Float32Array {
-  constructor(realX = 0, realY = 0, realZ = 0, realW = 1, dualX = 0, dualY = 0, dualZ = 0, dualW = 0) {
+  constructor(
+    realX: number,
+    realY: number,
+    realZ: number,
+    realW: number,
+    dualX: number,
+    dualY: number,
+    dualZ: number,
+    dualW: number,
+  ) {
     super(8)
     this[0] = realX
     this[1] = realY
@@ -19,11 +28,27 @@ export class DualQuat extends Float32Array {
     return this
   }
 
+  identity(): DualQuat {
+    this[0] = 0
+    this[1] = 0
+    this[2] = 0
+    this[3] = 1
+    this[4] = 0
+    this[5] = 0
+    this[6] = 0
+    this[7] = 0
+    return this
+  }
+
+  static identity(): DualQuat {
+    return new DualQuat(0, 0, 0, 1, 0, 0, 0, 0)
+  }
+
   clone(): DualQuat {
     return new DualQuat(this[0], this[1], this[2], this[3], this[4], this[5], this[6], this[7])
   }
 
-  static fromRotationTranslationValues(
+  setFromRotationTranslationValues(
     x1: number,
     y1: number,
     z1: number,
@@ -35,47 +60,56 @@ export class DualQuat extends Float32Array {
     const ax = x2 * 0.5
     const ay = y2 * 0.5
     const az = z2 * 0.5
-    return new DualQuat(
-      x1,
-      y1,
-      z1,
-      w1,
-      ax * w1 + ay * z1 - az * y1,
-      ay * w1 + az * x1 - ax * z1,
-      az * w1 + ax * y1 - ay * x1,
-      -ax * x1 - ay * y1 - az * z1,
-    )
+
+    this[0] = x1
+    this[1] = y1
+    this[2] = z1
+    this[3] = w1
+    this[4] = ax * w1 + ay * z1 - az * y1
+    this[5] = ay * w1 + az * x1 - ax * z1
+    this[6] = az * w1 + ax * y1 - ay * x1
+    this[7] = -ax * x1 - ay * y1 - az * z1
+    return this
   }
 
-  static fromTranslationRotation(q: Quat, t: Vec3): DualQuat {
+  setFromTranslationRotation(q: Quat, t: Vec3): DualQuat {
     const ax = t[0] * 0.5
     const ay = t[1] * 0.5
     const az = t[2] * 0.5
     const [bx, by, bz, bw] = q
-    return new DualQuat(
-      bx,
-      by,
-      bz,
-      bw,
-      ax * bw + ay * bz - az * by,
-      ay * bw + az * bx - ax * bz,
-      az * bw + ax * by - ay * bx,
-      -ax * bx - ay * by - az * bz,
-    )
+
+    this[0] = bx
+    this[1] = by
+    this[2] = bz
+    this[3] = bw
+    this[4] = ax * bw + ay * bz - az * by
+    this[5] = ay * bw + az * bx - ax * bz
+    this[6] = az * bw + ax * by - ay * bx
+    this[7] = -ax * bx - ay * by - az * bz
+
+    return this
   }
 
-  static fromTranslation(t: Vec3): DualQuat {
-    return new DualQuat(0, 0, 0, 1, t[0] * 0.5, t[1] * 0.5, t[2] * 0.5, 0)
+  setFromTranslation(t: Vec3): DualQuat {
+    this[0] = 0
+    this[1] = 0
+    this[2] = 0
+    this[3] = 1
+    this[4] = t[0] * 0.5
+    this[5] = t[1] * 0.5
+    this[6] = t[2] * 0.5
+    this[7] = 0
+    return this
   }
 
-  static fromRotation(q: Quat): DualQuat {
+  setFromRotation(q: Quat): DualQuat {
     return new DualQuat(q[0], q[1], q[2], q[3], 0, 0, 0, 0)
   }
 
-  static fromMat4(a: Mat4): DualQuat {
+  setFromMat4(a: Mat4): DualQuat {
     const outer = a.rotation
     const t = a.translation
-    return DualQuat.fromTranslationRotation(outer, t)
+    return this.setFromTranslationRotation(outer, t)
   }
 
   copy(dq: DualQuat): DualQuat {

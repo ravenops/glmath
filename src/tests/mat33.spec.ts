@@ -6,29 +6,29 @@ import { Vec2 } from '../lib/vec2'
 import { sqrt, equalsApproximately } from '../lib/common'
 
 describe('mat3', () => {
-  const matA4 = new Mat4()
-  let matA = new Mat3()
-  const matB = new Mat3()
-  let result: Mat3
+  const matA4 = Mat4.identity()
+  const matA = Mat3.identity()
+  const matB = Mat3.identity()
+  let result = Mat3.identity()
   const identity = Mat3.identity()
 
   beforeEach(() => {
     matA4.set([1, 0, 0, 0, 1, 0, 1, 2, 1])
-    matA = Mat3.fromMat4(matA4)
+    matA.setFromMat4(matA4)
     matB.set([1, 0, 0, 0, 1, 0, 3, 4, 1])
   })
 
   describe('normalFromMat4', () => {
     beforeEach(() => {
       matA4.set([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])
-      result = Mat3.normalFromMat4(matA4)
+      result.setFromMat4Normal(matA4)
     })
 
     describe('with translation and rotation', () => {
       beforeEach(() => {
         matA4.translate(new Vec3(2, 4, 6))
         matA4.rotateX(Math.PI / 2)
-        result = Mat3.normalFromMat4(matA4)
+        result.setFromMat4Normal(matA4)
       })
 
       it('should give rotated matrix', () => {
@@ -38,7 +38,7 @@ describe('mat3', () => {
       describe('and scale', () => {
         beforeEach(() => {
           matA4.scale(new Vec3(2, 3, 4))
-          result = Mat3.normalFromMat4(matA4)
+          result.setFromMat4Normal(matA4)
         })
 
         it('should give rotated matrix', () => {
@@ -51,17 +51,17 @@ describe('mat3', () => {
   describe('fromQuat', () => {
     const q = new Quat(0, -0.7071067811865475, 0, 0.7071067811865475)
     beforeEach(() => {
-      result = Mat3.fromQuat(q)
+      result.setFromQuat(q)
     })
 
     it('should rotate a vector the same as the original quat', () => {
-      const a = new Vec3().transformMat3(new Mat3(0, 0, -1))
-      const b = new Vec3().transformQuat(q)
+      const a = Vec3.zero().transformMat3(new Mat3(0, 0, -1, 0, 1, 0, 0, 0, 1))
+      const b = Vec3.zero().transformQuat(q)
       expect(a.equalsApproximately(b))
     })
 
     it('should rotate a vector by PI/2 radians', () => {
-      const a = new Vec3().transformMat3(new Mat3(0, 0, -1))
+      const a = Vec3.zero().transformMat3(new Mat3(0, 0, -1, 0, 1, 0, 0, 0, 1))
       const b = new Vec3(1, 0, 0)
       expect(a.equalsApproximately(b))
     })
@@ -69,7 +69,7 @@ describe('mat3', () => {
 
   describe('fromMat4', () => {
     beforeEach(() => {
-      result = Mat3.fromMat4(new Mat4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16))
+      result.setFromMat4(new Mat4(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16))
     })
     it('should calculate proper mat3', () => {
       expect(result.equalsApproximately(new Mat3(1, 2, 3, 5, 6, 7, 9, 10, 11)))
@@ -78,7 +78,7 @@ describe('mat3', () => {
 
   describe('scale', () => {
     beforeEach(() => {
-      result.copy(Mat3.fromMat4(matA4)).scale(new Vec2(2, 2))
+      result.copy(Mat3.identity().setFromMat4(matA4)).scale(new Vec2(2, 2))
     })
     it('should place proper values in out', () => {
       expect(result.equalsApproximately(new Mat3(2, 0, 0, 0, 2, 0, 1, 2, 1)))
@@ -87,7 +87,7 @@ describe('mat3', () => {
 
   describe('create', () => {
     beforeEach(() => {
-      result = new Mat3()
+      result = Mat3.identity()
     })
     it('should return a 9 element array initialized to a 3x3 identity matrix', () => {
       expect(result.equalsApproximately(identity))
@@ -261,7 +261,7 @@ describe('mat3', () => {
 
   describe('projection', () => {
     beforeEach(() => {
-      result = Mat3.projection(100, 200)
+      result.setFromProjection(100, 200)
     })
 
     it('should give projection matrix', () => {
@@ -270,7 +270,7 @@ describe('mat3', () => {
   })
 
   describe('exactEquals', () => {
-    const matC = new Mat3()
+    const matC = Mat3.identity()
     let r0: boolean, r1: boolean
     beforeEach(() => {
       matA.set([0, 1, 2, 3, 4, 5, 6, 7, 8])
@@ -295,8 +295,8 @@ describe('mat3', () => {
   })
 
   describe('equals', () => {
-    const matC = new Mat3()
-    const matD = new Mat3()
+    const matC = Mat3.identity()
+    const matD = Mat3.identity()
     let r0: boolean, r1: boolean, r2: boolean
 
     beforeEach(() => {
