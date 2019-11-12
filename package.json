@@ -1,6 +1,6 @@
 {
   "name": "glmath",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "Pure Typescript port of glMatrix for modern browsers",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
